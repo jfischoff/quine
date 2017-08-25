@@ -117,8 +117,6 @@ library
     Quine.Supply
     Quine.System
     Quine.Task
-
-  other-modules:
     Paths_quine
 
   build-depends:
