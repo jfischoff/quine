@@ -66,6 +66,7 @@ library
   ghc-options: -Wall -O2
   hs-source-dirs: src
   include-dirs: shaders
+  install-includes: locations.h
   exposed-modules:
     Quine.Camera
     Quine.Clock
