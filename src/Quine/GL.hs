@@ -19,7 +19,7 @@
 --
 --------------------------------------------------------------------
 module Quine.GL
-  ( 
+  (
   -- * Compiling and Linking
     compile
   , link
@@ -42,6 +42,8 @@ import Prelude hiding (concat)
 import Quine.GL.Shader
 import Quine.GL.Object
 import Quine.GL.Program
+import Quine.GL.Error
+import Graphics.GL.Core45
 
 -- * Shaders and Programs
 
@@ -68,15 +70,23 @@ compile :: MonadIO m => [FilePath] -> ShaderType -> FilePath -> m Shader
 compile searchPaths st fp = do
   source <- liftIO $ readFile fp
   s <- createShader st
+  isShader <- glIsShader $ object s
+  liftIO $ putStrLn $ "created shader " ++ show s ++ " is shader " ++ show isShader
+  throwErrors
   shaderSource s $= UTF8.fromString source
+  liftIO $ putStrLn source
+  liftIO $ putStrLn "set shader source"
+  throwErrors
   compileShaderInclude s searchPaths
+  liftIO $ putStrLn $ "compiled shader " ++ show searchPaths
+  throwErrors
   compiled <- compileStatus s
   unless compiled $ do
     e <- shaderInfoLog s
     delete s
     throw $ ShaderException fp e
   return s
-  
+
 -- | Link a program and vertex shader to build a program
 link :: MonadIO m => [Shader] -> m Program
 link ss = liftIO $ do

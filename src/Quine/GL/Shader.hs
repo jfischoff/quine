@@ -9,7 +9,7 @@
 --
 --------------------------------------------------------------------
 module Quine.GL.Shader
-  ( 
+  (
   -- * Shader types
     ShaderType
   , showShaderType
@@ -71,7 +71,7 @@ newtype Shader = Shader GLuint deriving
 
 instance Object Shader where
   object (Shader s) = s
-  isa (Shader s) = (GL_FALSE /=) `liftM` glIsShader s 
+  isa (Shader s) = (GL_FALSE /=) `liftM` glIsShader s
   delete (Shader s) = glDeleteShader s
 
 -- | Create a shader
@@ -141,7 +141,7 @@ shaderSource (Shader sh) = StateVar g s where
       pokeElemOff ps i (castPtr p `plusPtr` o)
       go (i+1) cs ps pl
 
-  go i [] ps pl = glShaderSource sh (fromIntegral i) ps pl 
+  go i [] ps pl = glShaderSource sh (fromIntegral i) ps pl
 
 shaderInfoLog :: MonadIO m => Shader -> m Strict.ByteString
 shaderInfoLog s = do
@@ -154,10 +154,10 @@ shaderInfoLog s = do
         glGetShaderInfoLog (object s) (fromIntegral l') pl (castPtr ps)
         return $ l-1
 
--- | 
+-- |
 --
 -- Using statically embedded strings in the executable:
--- 
+--
 -- @
 -- buildNamedStrings $(embedDir "foo") ('/':)
 -- @
@@ -189,7 +189,8 @@ buildNamedStrings includes tweak = liftIO $ when gl_ARB_shading_language_include
 -- Falls back to 'compileShader' if 'gl_ARB_shading_language_include' isn't available.
 compileShaderInclude :: MonadIO m => Shader -> [FilePath] -> m ()
 compileShaderInclude (Shader s) path
-  | gl_ARB_shading_language_include = 
+  | gl_ARB_shading_language_include && False = do
+    liftIO $ putStrLn "using glCompileShaderIncludeARB"
     liftIO $ withCStrings path $ \n cpcs -> glCompileShaderIncludeARB s (fromIntegral n) cpcs nullPtr
   | otherwise = glCompileShader s
 
